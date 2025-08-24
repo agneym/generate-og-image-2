@@ -17,7 +17,7 @@ jobs:
           cache: "pnpm"
 
       - name: "Setup bun"
-        uses: oven-sh/bun-action@v2
+        uses: oven-sh/setup-bun@v2
 
       - name: "Install dependencies"
         run: pnpm install --frozen-lockfile
