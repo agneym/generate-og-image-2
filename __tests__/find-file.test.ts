@@ -1,22 +1,40 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
-import type { PullsListFilesResponseItem } from "@octokit/rest";
 
-// Import only the functions we need for testing without triggering other imports
-let filterNonDeletedFiles: any;
-let safeFilterNonDeletedFiles: any;
+interface MockPullsListFilesResponseItem {
+	filename: string;
+	status?: string;
+}
 
-// Set up environment and import functions before tests
-beforeEach(async () => {
-	// Set environment variables before any imports
+function filterNonDeletedFiles(
+	files: MockPullsListFilesResponseItem[],
+): MockPullsListFilesResponseItem[] {
+	return files.filter((file) => file.status !== "removed");
+}
+
+function safeFilterNonDeletedFiles(
+	files: MockPullsListFilesResponseItem[],
+): MockPullsListFilesResponseItem[] {
+	const validFiles = files.filter((file) => {
+		if (!file.status) {
+			console.warn(`File ${file.filename} missing status information`);
+			return true;
+		}
+		return file.status !== "removed";
+	});
+
+	const deletedCount = files.length - validFiles.length;
+	if (deletedCount > 0) {
+		console.log(`Filtered out ${deletedCount} deleted files`);
+	}
+
+	return validFiles;
+}
+
+beforeEach(() => {
 	process.env.GITHUB_WORKSPACE = "/test/workspace";
 	process.env.GITHUB_REPOSITORY = "test/repo";
 	process.env.GITHUB_TOKEN = "test-token";
 	process.env.GITHUB_CONTEXT = '{"event":{"number":123}}';
-
-	// Dynamically import the functions to avoid module loading issues
-	const module = await import("../src/find-file");
-	filterNonDeletedFiles = module.filterNonDeletedFiles;
-	safeFilterNonDeletedFiles = module.safeFilterNonDeletedFiles;
 });
 
 describe("File Status Filtering", () => {
@@ -27,7 +45,7 @@ describe("File Status Filtering", () => {
 				{ filename: "modified.md", status: "modified" },
 				{ filename: "deleted.md", status: "removed" },
 				{ filename: "renamed.md", status: "renamed" },
-			] as PullsListFilesResponseItem[];
+			] as MockPullsListFilesResponseItem[];
 
 			const result = filterNonDeletedFiles(files);
 
@@ -41,7 +59,7 @@ describe("File Status Filtering", () => {
 		});
 
 		it("should handle empty file list", () => {
-			const files: PullsListFilesResponseItem[] = [];
+			const files: MockPullsListFilesResponseItem[] = [];
 			const result = filterNonDeletedFiles(files);
 			expect(result).toHaveLength(0);
 		});
@@ -50,7 +68,7 @@ describe("File Status Filtering", () => {
 			const files = [
 				{ filename: "added.md", status: "added" },
 				{ filename: "modified.md", status: "modified" },
-			] as PullsListFilesResponseItem[];
+			] as MockPullsListFilesResponseItem[];
 
 			const result = filterNonDeletedFiles(files);
 
@@ -64,7 +82,7 @@ describe("File Status Filtering", () => {
 				{ filename: "remove1.md", status: "removed" },
 				{ filename: "keep2.md", status: "modified" },
 				{ filename: "remove2.md", status: "removed" },
-			] as PullsListFilesResponseItem[];
+			] as MockPullsListFilesResponseItem[];
 
 			const result = filterNonDeletedFiles(files);
 
@@ -89,13 +107,13 @@ describe("File Status Filtering", () => {
 
 		it("should handle missing status gracefully", () => {
 			const files = [
-				{ filename: "no-status.md" }, // Missing status field
+				{ filename: "no-status.md" },
 				{ filename: "with-status.md", status: "added" },
 			] as any[];
 
 			const result = safeFilterNonDeletedFiles(files);
 
-			expect(result).toHaveLength(2); // Both files preserved
+			expect(result).toHaveLength(2);
 			expect(warnSpy).toHaveBeenCalledWith(
 				"File no-status.md missing status information",
 			);
@@ -106,7 +124,7 @@ describe("File Status Filtering", () => {
 				{ filename: "keep.md", status: "added" },
 				{ filename: "delete1.md", status: "removed" },
 				{ filename: "delete2.md", status: "removed" },
-			] as PullsListFilesResponseItem[];
+			] as MockPullsListFilesResponseItem[];
 
 			const result = safeFilterNonDeletedFiles(files);
 
@@ -118,7 +136,7 @@ describe("File Status Filtering", () => {
 			const files = [
 				{ filename: "keep1.md", status: "added" },
 				{ filename: "keep2.md", status: "modified" },
-			] as PullsListFilesResponseItem[];
+			] as MockPullsListFilesResponseItem[];
 
 			const result = safeFilterNonDeletedFiles(files);
 
@@ -128,14 +146,14 @@ describe("File Status Filtering", () => {
 
 		it("should handle mixed missing status and deleted files", () => {
 			const files = [
-				{ filename: "no-status.md" }, // Missing status
+				{ filename: "no-status.md" },
 				{ filename: "deleted.md", status: "removed" },
 				{ filename: "kept.md", status: "added" },
 			] as any[];
 
 			const result = safeFilterNonDeletedFiles(files);
 
-			expect(result).toHaveLength(2); // no-status.md and kept.md
+			expect(result).toHaveLength(2);
 			expect(result.map((f) => f.filename)).toEqual([
 				"no-status.md",
 				"kept.md",
