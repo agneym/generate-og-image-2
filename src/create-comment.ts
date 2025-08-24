@@ -6,7 +6,7 @@ const createComment = async (body: string) => {
 	const [owner, repo] = USER_REPO;
 	const prNumber = getPrNumber();
 
-	return octokit.issues.createComment({
+	return octokit.rest.issues.createComment({
 		owner,
 		repo,
 		issue_number: prNumber,

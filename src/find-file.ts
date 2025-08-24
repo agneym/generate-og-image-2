@@ -1,7 +1,10 @@
 import { readFileSync } from "node:fs";
-import type { PullsListFilesResponseItem } from "@octokit/rest";
+import type { RestEndpointMethodTypes } from "@octokit/rest";
 import { kebabCase } from "es-toolkit/string";
 import fm from "front-matter";
+
+type PullsListFilesResponseItem =
+	RestEndpointMethodTypes["pulls"]["listFiles"]["response"]["data"][0];
 
 import { FORMATS, REPO_DIRECTORY, USER_REPO } from "./constants";
 import { filterFiles } from "./file-filter";
@@ -69,7 +72,7 @@ function getOutputImageFilename(
  */
 function getAttributes(files: PullsListFilesResponseItem[]): IFileProps[] {
 	return files.map((file) => {
-		const sourceFilePath = file.filename; // Path to the source markdown file
+		const sourceFilePath = file.filename;
 		const repoDirectory = REPO_DIRECTORY as string;
 		const contents = readFileSync(`${repoDirectory}/${sourceFilePath}`, {
 			encoding: "utf8",
@@ -98,7 +101,7 @@ async function findFile(ignorePatterns: string[] = []) {
 	const [owner, repo] = USER_REPO;
 	const pullNumber = getPrNumber();
 
-	const { data: filesList } = await octokit.pulls.listFiles({
+	const { data: filesList } = await octokit.rest.pulls.listFiles({
 		owner,
 		repo,
 		pull_number: pullNumber,

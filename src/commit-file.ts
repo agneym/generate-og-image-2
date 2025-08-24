@@ -20,7 +20,7 @@ async function commitFile(
 	try {
 		let sha: string | undefined;
 		try {
-			const { data: existingFile } = await octokit.repos.getContents({
+			const { data: existingFile } = await octokit.rest.repos.getContent({
 				owner,
 				repo,
 				path: filePath,
@@ -38,23 +38,24 @@ async function commitFile(
 			}
 		}
 
-		const commitParams: Parameters<typeof octokit.repos.createOrUpdateFile>[0] =
-			{
-				owner,
-				repo,
-				path: filePath,
-				branch: GITHUB_HEAD_REF,
-				message: repoProps.commitMsg || "",
-				content,
-				...COMMITTER,
-				sha: undefined,
-			};
+		const commitParams: Parameters<
+			typeof octokit.rest.repos.createOrUpdateFileContents
+		>[0] = {
+			owner,
+			repo,
+			path: filePath,
+			branch: GITHUB_HEAD_REF,
+			message: repoProps.commitMsg || "",
+			content,
+			...COMMITTER,
+			sha: undefined,
+		};
 
 		if (sha) {
 			commitParams.sha = sha;
 		}
 
-		await octokit.repos.createOrUpdateFile(commitParams);
+		await octokit.rest.repos.createOrUpdateFileContents(commitParams);
 	} catch (err) {
 		error(`Adding a commit to branch ${GITHUB_HEAD_REF} failed with ${err}`);
 	}
