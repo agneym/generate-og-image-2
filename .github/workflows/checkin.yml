@@ -16,17 +16,20 @@ jobs:
           node-version: 20
           cache: "pnpm"
 
+      - name: "Setup bun"
+        uses: oven-sh/bun-action@v2
+
       - name: "Install dependencies"
         run: pnpm install --frozen-lockfile
 
       - name: "Type check"
-        run: pnpm run typecheck
+        run: bun run typecheck
 
       - name: "Build release"
-        run: pnpm run build-release
+        run: bun run build-release
 
       - name: "Run tests"
-        run: pnpm test
+        run: bun test
 
       - name: "check for uncommitted changes"
         # Ensure no changes, but ignore node_modules dir since dev/fresh ci deps installed.
