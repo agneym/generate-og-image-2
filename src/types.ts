@@ -13,14 +13,21 @@ export interface IProps {
 	fontSize: string;
 }
 
-export interface IFrontMatter {
-	ogImage: IProps;
+// New React component configuration
+export interface IReactComponentConfig {
+	component?: string; // Path to React component (optional for backward compatibility)
+	componentName?: string; // Named export (defaults to default export)
+	customProps?: Record<string, any>; // Additional props to pass to component
 }
 
-export interface IRepoProps extends IProps {
+export interface IFrontMatter {
+	ogImage: IProps & IReactComponentConfig;
+}
+
+export interface IRepoProps extends IProps, IReactComponentConfig {
 	assetPath: string;
 	commitMsg: string;
-	componentUrl: string;
+	componentUrl?: string; // Legacy web component URL (deprecated)
 	width: string | number;
 	height: string | number;
 	botComments: string;

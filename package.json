@@ -7,9 +7,12 @@
 	"scripts": {
 		"typecheck": "bun --bun tsc --noEmit",
 		"build": "bun build src/main.ts --outdir dist --target node",
+		"build-action": "bun build src/main.ts --outfile dist/index.js --target node --minify",
 		"build-release": "bun build src/main.ts --compile --outfile dist/index.js",
 		"format": "biome format --write",
-		"test": "bun test"
+		"test": "bun test",
+		"dev": "bun run scripts/run-local.ts",
+		"start": "bun run src/main.ts"
 	},
 	"repository": {
 		"type": "git",
@@ -24,11 +27,14 @@
 	"dependencies": {
 		"@actions/core": "^1.9.1",
 		"@actions/github": "^1.1.0",
+		"@takumi-rs/core": "^0.27.6",
+		"@takumi-rs/helpers": "^0.27.6",
 		"es-toolkit": "^1.39.10",
 		"front-matter": "^3.0.2",
 		"marked": "^4.0.10",
 		"picomatch": "^3.0.1",
-		"puppeteer-core": "^1.20.0",
+		"react": "^18.0.0",
+		"react-dom": "^18.0.0",
 		"twemoji": "^12.1.6"
 	},
 	"devDependencies": {
@@ -37,8 +43,7 @@
 		"@types/marked": "^4.0.3",
 		"@types/node": "^20.0.0",
 		"@types/picomatch": "^2.3.0",
-		"@types/puppeteer": "^1.19.1",
-		"@types/puppeteer-core": "5.4.0",
+		"@types/react": "^18.0.0",
 		"lefthook": "^1.12.2",
 		"typescript": "^5.0.4"
 	}

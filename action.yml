@@ -17,17 +17,20 @@ inputs:
   fontColor:
     description: "font color for image"
     default: "#000000"
-  componentUrl:
-    description: "URL for web component"
-    default: "https://unpkg.com/@agney/og-image-element@0.2.3"
+  component:
+    description: "Path to React component for custom OG image generation"
+    default: ""
+  componentName:
+    description: "Named export for React component (defaults to default export)"
+    default: ""
   fontSize:
     description: "Font size for the root"
     default: "100%"
   width:
-    description: "Width of the screen"
+    description: "Width of the image"
     default: "1200"
   height:
-    description: "Height of the screen"
+    description: "Height of the image"
     default: "630"
   botComments:
     description: "Whether a comment with a preview image should be posted"
@@ -36,5 +39,5 @@ inputs:
     description: "Comma-separated glob patterns for files to ignore"
     default: "/README.md"
 runs:
-  using: "docker"
-  image: "Dockerfile"
+  using: "node24"
+  main: "dist/index.js"
