@@ -39,5 +39,5 @@ inputs:
     description: "Comma-separated glob patterns for files to ignore"
     default: "/README.md"
 runs:
-  using: "node24"
-  main: "dist/main.js"
+  using: "docker"
+  image: "Dockerfile"

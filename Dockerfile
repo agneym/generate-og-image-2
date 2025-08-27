@@ -19,6 +19,6 @@ COPY __tests__/ /usr/local/src/generate-og-image/__tests__/
 
 RUN bun run build-release
 
-RUN chmod +x /usr/local/src/generate-og-image/dist/index.js
+RUN chmod +x /usr/local/src/generate-og-image/dist/main.js
 
-ENTRYPOINT ["/usr/local/src/generate-og-image/dist/index.js"]
+ENTRYPOINT ["/usr/local/src/generate-og-image/dist/main.js"]
