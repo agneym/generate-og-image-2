@@ -3,7 +3,7 @@ FROM oven/bun:1-debian
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN bun install -g pnpm
 
 RUN apt update && apt install -y \
     ca-certificates \
