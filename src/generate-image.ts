@@ -1,20 +1,32 @@
-import puppeteer from "puppeteer-core";
-import type { IViewport } from "./types";
+import React from "react";
+import { createComponentProps, loadComponent } from "./takumi/component-loader";
+import { getTakumiRenderer } from "./takumi/renderer";
+import type { IRepoProps, IViewport } from "./types";
 
-async function generateImage(viewport: IViewport, html: string) {
-	const browser = await puppeteer.launch({
-		executablePath: "/usr/bin/google-chrome-stable",
-		args: ["--no-sandbox"],
-	});
-	const page = await browser.newPage();
-	page.setViewport({
-		width: +viewport.width,
-		height: +viewport.height,
-	});
-	await page.setContent(html);
-	const image = await page.screenshot({ encoding: "base64" });
-	await browser.close();
-	return image;
+async function generateImage(
+	viewport: IViewport,
+	repoProps: Partial<IRepoProps>,
+) {
+	try {
+		const Component = await loadComponent(
+			repoProps.component,
+			repoProps.componentName,
+		);
+
+		const componentProps = createComponentProps(repoProps);
+
+		const element = React.createElement(Component, componentProps);
+
+		const renderer = getTakumiRenderer();
+		const image = await renderer.generateFromComponent(element, viewport);
+
+		return image;
+	} catch (error) {
+		console.error("Error generating image:", error);
+		throw new Error(
+			`Image generation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+		);
+	}
 }
 
 export default generateImage;

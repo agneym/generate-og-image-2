@@ -8,6 +8,7 @@ import findFile from "./find-file";
 import generateHtml from "./generate-html";
 import generateImage from "./generate-image";
 import getRepoProps from "./repo-props";
+import { isLegacyWebComponentConfig } from "./takumi/component-loader";
 
 if (!GITHUB_TOKEN) {
 	console.log("You must enable the GITHUB_TOKEN secret");
@@ -29,17 +30,29 @@ async function run() {
 	}
 
 	fileProperties.forEach(async (property) => {
-		const html = generateHtml({
+		const mergedProps = {
 			...repoProps,
 			...property.attributes,
-		});
+		};
 
+		// Check if this is a legacy web component configuration
+		if (isLegacyWebComponentConfig(mergedProps)) {
+			console.warn(`Legacy web component detected for ${property.filename}. Consider migrating to React components.`);
+			
+			// Use legacy HTML generation for backward compatibility
+			const html = generateHtml(mergedProps);
+			
+			// This would require keeping the old Puppeteer logic, but for now we'll error
+			throw new Error("Legacy web components are no longer supported. Please migrate to React components.");
+		}
+
+		// Use new React component-based image generation
 		const image = await generateImage(
 			{
 				width: repoProps.width,
 				height: repoProps.height,
 			},
-			html,
+			mergedProps
 		);
 
 		commitFile(image, repoProps, property.filename);

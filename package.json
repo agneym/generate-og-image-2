@@ -5,11 +5,11 @@
 	"description": "JavaScript template action",
 	"main": "dist/index.js",
 	"scripts": {
-		"typecheck": "bun --bun tsc --noEmit",
-		"build": "bun build src/main.ts --outdir dist --target node",
-		"build-release": "bun build src/main.ts --compile --outfile dist/index.js",
+		"typecheck": "tsc --noEmit",
+		"build-release": "bun build src/main.ts --target bun --outdir dist/",
 		"format": "biome format --write",
-		"test": "bun test"
+		"test": "bun test",
+		"start": "bun run src/main.ts"
 	},
 	"repository": {
 		"type": "git",
@@ -23,12 +23,15 @@
 	"license": "MIT",
 	"dependencies": {
 		"@actions/core": "^1.9.1",
-		"@actions/github": "^1.1.0",
+		"@octokit/rest": "^22.0.0",
+		"@takumi-rs/core": "^0.27.6",
+		"@takumi-rs/helpers": "^0.27.6",
 		"es-toolkit": "^1.39.10",
 		"front-matter": "^3.0.2",
 		"marked": "^4.0.10",
 		"picomatch": "^3.0.1",
-		"puppeteer-core": "^1.20.0",
+		"react": "^19.1.1",
+		"react-dom": "^19.1.1",
 		"twemoji": "^12.1.6"
 	},
 	"devDependencies": {
@@ -37,9 +40,9 @@
 		"@types/marked": "^4.0.3",
 		"@types/node": "^20.0.0",
 		"@types/picomatch": "^2.3.0",
-		"@types/puppeteer": "^1.19.1",
-		"@types/puppeteer-core": "5.4.0",
+		"@types/react": "^19.1.11",
 		"lefthook": "^1.12.2",
 		"typescript": "^5.0.4"
-	}
+	},
+	"packageManager": "pnpm@10.14.0+sha512.ad27a79641b49c3e481a16a805baa71817a04bbe06a38d17e60e2eaee83f6a146c6a688125f5792e48dd5ba30e7da52a5cda4c3992b9ccf333f9ce223af84748"
 }
