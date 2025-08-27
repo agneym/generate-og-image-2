@@ -6,10 +6,9 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"typecheck": "tsc --noEmit",
-		"build-release": "bun build src/main.ts --compile --outfile dist/index.js",
+		"build-release": "bun build src/main.ts --target node --outdir dist/",
 		"format": "biome format --write",
 		"test": "bun test",
-		"dev": "bun run scripts/run-local.ts",
 		"start": "bun run src/main.ts"
 	},
 	"repository": {
