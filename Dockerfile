@@ -15,7 +15,7 @@ RUN mkdir -p /usr/local/src/generate-og-image
 WORKDIR /usr/local/src/generate-og-image
 
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm fetch --prod
+RUN pnpm install --frozen-lockfile --prod
 
 COPY tsconfig.json bunfig.toml /usr/local/src/generate-og-image/
 COPY src/ /usr/local/src/generate-og-image/src/
